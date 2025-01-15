@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { ref, onValue, update } from 'firebase/database';
+import database from '../firebase';
 import './index.css';
 
 const clubsAndBars = [
@@ -15,17 +17,14 @@ const App = () => {
   const [ratedLocations, setRatedLocations] = useState(new Set());
 
   useEffect(() => {
-    // Reset ratings and rated locations at 6:00 AM PST daily.
-    const now = new Date();
-    const resetTime = new Date();
-    resetTime.setHours(6, 0, 0, 0);
-    if (now > resetTime) resetTime.setDate(resetTime.getDate() + 1);
-
-    const timeout = setTimeout(() => {
-      setRatings({});
-      setRatedLocations(new Set());
-    }, resetTime - now);
-    return () => clearTimeout(timeout);
+    // Listen for real-time updates from Firebase
+    const ratingsRef = ref(database, 'ratings');
+    onValue(ratingsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setRatings(data);
+      }
+    });
   }, []);
 
   const handleRatingChange = (club, newRating) => {
@@ -34,15 +33,13 @@ const App = () => {
       return;
     }
 
-    setRatings((prev) => {
-      const currentRating = prev[club] || { total: 0, count: 0 };
-      return {
-        ...prev,
-        [club]: {
-          total: currentRating.total + newRating,
-          count: currentRating.count + 1,
-        },
-      };
+    const clubRef = ref(database, `ratings/${club}`);
+    const currentRating = ratings[club] || { total: 0, count: 0 };
+
+    // Update Firebase with the new rating
+    update(clubRef, {
+      total: currentRating.total + newRating,
+      count: currentRating.count + 1,
     });
 
     setRatedLocations((prev) => new Set(prev).add(club));
@@ -56,7 +53,9 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Downtown San Diego & Pacific Beach Clubs/Bars Rating</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">
+        Downtown San Diego & Pacific Beach Clubs/Bars Rating
+      </h1>
       <div className="w-full max-w-2xl bg-white shadow-md rounded-lg p-6">
         {clubsAndBars.map((club) => (
           <div key={club} className="border-b py-4">
@@ -77,7 +76,9 @@ const App = () => {
           </div>
         ))}
       </div>
-      <footer className="mt-6 text-gray-500 text-sm">Ratings reset daily at 6:00 AM PST</footer>
+      <footer className="mt-6 text-gray-500 text-sm">
+        Ratings reset daily at 6:00 AM PST
+      </footer>
     </div>
   );
 };
