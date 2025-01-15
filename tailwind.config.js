@@ -2,7 +2,12 @@
 export default {
   content: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'neon-purple': '#A020F0',
+        'purple-800': '#6D28D9',
+      },
+    },
   },
   plugins: [],
 }
