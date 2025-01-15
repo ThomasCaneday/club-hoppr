@@ -4,12 +4,12 @@ import database from '../firebase';
 import './index.css';
 
 const clubsAndBars = [
-  'Club 1',
-  'Bar 1',
-  'Club 2',
-  'Bar 2',
-  'Club 3',
-  'Bar 3',
+  'The Owl San Diego',
+  'Mavericks Beach Club',
+  'Nova SD',
+  'PB Shore Club',
+  'Parq Nightclub',
+  'The Duck Dive',
 ];
 
 const App = () => {
