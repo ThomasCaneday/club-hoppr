@@ -4,7 +4,7 @@ import tailwindcss from 'tailwindcss'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/nightline/',
+  base: '/club-hopper/',
   plugins: [react()],
   css: {
     postcss: {

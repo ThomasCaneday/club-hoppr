@@ -240,7 +240,7 @@ const App = () => {
   return (
     <div className="min-h-screen w-screen flex flex-col items-center bg-black p-4 sm:p-6 lg:p-8">
       <h1 className="text-4xl font-bold text-neon-purple mb-6 text-center">
-        NIGHTLINE
+        CLUB HOPPER
       </h1>
       <h2 className="text-1xl font-bold text-neon-purple mb-6 text-center">
         Give YOUR Rating of the Hottest Spots in Downtown SD & PB!

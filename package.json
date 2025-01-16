@@ -1,9 +1,9 @@
 {
-  "name": "nightline",
+  "name": "club-hopper",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://ThomasCaneday.github.io/nightline",
+  "homepage": "https://ThomasCaneday.github.io/club-hopper",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

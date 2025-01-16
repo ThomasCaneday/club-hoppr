@@ -1,6 +1,6 @@
-# Nightline
+# Club Hopper
 
-**Nightline** is a React application designed to let users rate and comment on popular clubs and bars in Downtown San Diego & Pacific Beach. It features:
+**Club Hopper** is a React application designed to let users rate and comment on popular clubs and bars in Downtown San Diego & Pacific Beach. It features:
 
 - **Per-Club Ratings:** Users can choose a rating (1–10) for each club or bar.
 - **Per-Club Comments:** Users can add comments specifically for each location.
@@ -28,7 +28,7 @@
 
 ## Demo
 
-[Live Site](https://thomascaneday.github.io/nightline/)
+[Live Site](https://thomascaneday.github.io/club-hopper/)
 
 ---
 
