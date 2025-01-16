@@ -203,10 +203,10 @@ const App = () => {
 
       {previousNightTop && (
         <div className="mb-6 p-4 bg-gray-900 rounded-lg shadow-lg text-center">
-          <h2 className="text-xl font-bold text-neon-purple mb-2 text-center">
+          <h2 className="text-md font-bold text-neon-purple mb-2 text-center">
             ⭐️ Top Rated from the Previous Night ⭐️
           </h2>
-          <h3 className="text-white font-bold text-2xl mt-2 mb-1 text-center">
+          <h3 className="text-white font-bold text-3xl mt-2 mb-1 text-center">
             {previousNightTop.club}
           </h3>
           <p className="text-yellow-400">
