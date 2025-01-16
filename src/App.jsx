@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ref, onValue, update, set } from 'firebase/database';
+import { ref, onValue, update, set, get } from 'firebase/database';
 import database from '../firebase';
 import './index.css';
 
@@ -40,6 +40,7 @@ const App = () => {
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [submissionEmail, setSubmissionEmail] = useState('');
   const [submissionMessage, setSubmissionMessage] = useState('');
+  const [previousNightTop, setPreviousNightTop] = useState(null);
 
   // Load RATINGS from Firebase
   useEffect(() => {
@@ -58,17 +59,58 @@ const App = () => {
     const resetTime = new Date();
     resetTime.setHours(6, 0, 0, 0);
     if (now > resetTime) resetTime.setDate(resetTime.getDate() + 1);
-
-    const timeout = setTimeout(() => {
-      // Clear comments
-      const commentsRef = ref(database, 'comments');
-      set(commentsRef, null);
-      // Clear ratings
-      const ratingsRef = ref(database, 'ratings');
-      set(ratingsRef, null);
+  
+    const timeout = setTimeout(async () => {
+      // 1. Get all current ratings
+      const ratingsSnap = await get(ref(database, 'ratings'));
+      const ratingsData = ratingsSnap.val();
+  
+      if (ratingsData) {
+        // 2. Find the club with the highest average rating
+        let topClub = null;
+        let topAverage = -Infinity;
+        Object.keys(ratingsData).forEach((clubName) => {
+          const { total, count } = ratingsData[clubName];
+          if (count > 0) {
+            const avg = total / count;
+            if (avg > topAverage) {
+              topAverage = avg;
+              topClub = clubName;
+            }
+          }
+        });
+  
+        if (topClub) {
+          // 3. Store it in "topRating" with the average
+          const topRatingRef = ref(database, 'topRating');
+          set(topRatingRef, {
+            club: topClub,
+            average: topAverage,
+            timestamp: Date.now(),
+          });
+        }
+      }
+  
+      // 4. Clear comments & ratings
+      set(ref(database, 'comments'), null);
+      set(ref(database, 'ratings'), null);
     }, resetTime - now);
-
+  
     return () => clearTimeout(timeout);
+  }, []);
+
+  // Top Rating from Previous Night
+  useEffect(() => {
+    const topRatingRef = ref(database, 'topRating');
+    onValue(topRatingRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        // data = { club: "Club Name", average: 8.6, timestamp: 169394... }
+        setPreviousNightTop(data);
+      } else {
+        setPreviousNightTop(null);
+      }
+    });
   }, []);
 
   // Load comments ON DEMAND
@@ -158,6 +200,20 @@ const App = () => {
       <h2 className="text-1xl font-bold text-neon-purple mb-6 text-center">
         Give YOUR Rating of the Hottest Spots in Downtown SD & PB!
       </h2>
+
+      {previousNightTop && (
+        <div className="mb-6 p-4 bg-gray-900 rounded-lg shadow-lg">
+          <h2 className="text-xl font-bold text-neon-purple mb-2">
+            Top Rated from the Previous Night ⭐️
+          </h2>
+          <h3 className="text-white font-bold text-lg mb-1">
+            {previousNightTop.club}
+          </h3>
+          <p className="text-yellow-400">
+            Average Rating: {previousNightTop.average.toFixed(1)}
+          </p>
+        </div>
+      )}
 
       <div className="w-screen max-w-2xl bg-gray-900 shadow-lg rounded-lg p-4 sm:p-6 md:p-8">
         {clubsAndBars.map((club) => {
