@@ -20,7 +20,6 @@ const getRatingColorClass = (rating) => {
 
 const getFireOpacity = (rating) => {
   if (!rating) return 0;
-  // rating 0..10 -> opacity 0..1
   return Math.min(1, rating / 10);
 };
 
@@ -36,6 +35,11 @@ const App = () => {
     }, {})
   );
   const [newComment, setNewComment] = useState('');
+
+  // NEW STATE FOR SUBMISSION POPUP
+  const [showSubmissionForm, setShowSubmissionForm] = useState(false);
+  const [submissionEmail, setSubmissionEmail] = useState('');
+  const [submissionMessage, setSubmissionMessage] = useState('');
 
   // Load RATINGS from Firebase
   useEffect(() => {
@@ -67,10 +71,9 @@ const App = () => {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Load comments ON DEMAND for currentClubForComments
+  // Load comments ON DEMAND
   useEffect(() => {
     if (!currentClubForComments) return;
-
     const clubCommentsRef = ref(database, `comments/${currentClubForComments}`);
     const unsubscribe = onValue(clubCommentsRef, (snapshot) => {
       const data = snapshot.val();
@@ -87,7 +90,6 @@ const App = () => {
         }));
       }
     });
-
     return () => unsubscribe();
   }, [currentClubForComments]);
 
@@ -105,14 +107,12 @@ const App = () => {
   // ADD COMMENT (PER CLUB)
   const handleAddComment = () => {
     if (!newComment.trim() || !currentClubForComments) return;
-
     const uniqueKey = Date.now();
     const clubCommentsRef = ref(database, `comments/${currentClubForComments}/${uniqueKey}`);
     const commentData = {
       text: newComment,
       timestamp: uniqueKey,
     };
-
     update(clubCommentsRef, commentData);
     setNewComment('');
   };
@@ -123,7 +123,6 @@ const App = () => {
       alert('You have already rated this location.');
       return;
     }
-
     const clubRef = ref(database, `ratings/${club}`);
     const currentRating = ratings[club] || { total: 0, count: 0 };
     update(clubRef, {
@@ -131,6 +130,24 @@ const App = () => {
       count: currentRating.count + 1,
     });
     setRatedLocations((prev) => new Set(prev).add(club));
+  };
+
+  // NEW: HANDLE SUBMISSION
+  const handleSubmitClubSubmission = () => {
+    if (!submissionEmail.trim() || !submissionMessage.trim()) return;
+
+    const uniqueKey = Date.now();
+    const submissionRef = ref(database, `clubSubmissions/${uniqueKey}`);
+    const submissionData = {
+      email: submissionEmail,
+      message: submissionMessage,
+      timestamp: uniqueKey,
+    };
+
+    update(submissionRef, submissionData);
+    setSubmissionEmail('');
+    setSubmissionMessage('');
+    setShowSubmissionForm(false);
   };
 
   return (
@@ -144,7 +161,6 @@ const App = () => {
 
       <div className="w-screen max-w-2xl bg-gray-900 shadow-lg rounded-lg p-4 sm:p-6 md:p-8">
         {clubsAndBars.map((club) => {
-          // Compute numeric average so we can control the fire emoji's opacity
           const clubRatings = ratings[club];
           let averageNumeric = null;
           if (clubRatings && clubRatings.count > 0) {
@@ -195,10 +211,20 @@ const App = () => {
         })}
       </div>
 
+      {/* FOOTER */}
       <footer className="mt-6 text-gray-400 text-sm text-center">
         Ratings & Comments reset daily at 6:00 AM PST
       </footer>
 
+      {/* NEW: Request a Bar/Club Button */}
+      <button
+        className="mt-4 bg-neon-purple px-4 py-2 rounded hover:bg-purple-800 text-black"
+        onClick={() => setShowSubmissionForm(true)}
+      >
+        Request a Bar/Club to be Added
+      </button>
+
+      {/* EXISTING COMMENTS POPUP */}
       {currentClubForComments && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-end z-50">
           <div className="bg-gray-900 text-white w-80 h-full shadow-lg overflow-y-auto p-4 relative">
@@ -236,6 +262,50 @@ const App = () => {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* NEW: Club Submission Popover */}
+      {showSubmissionForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-gray-900 text-white w-80 rounded-lg shadow-lg p-4 relative">
+            <button
+              className="float-right top-2 right-2 text-gray-400 hover:text-gray-200"
+              onClick={() => setShowSubmissionForm(false)}
+            >
+              Close
+            </button>
+            <h2 className="text-2xl font-bold mb-4">Request a New Club/Bar</h2>
+
+            <label className="block mb-2 text-sm font-medium">
+              Your Email:
+            </label>
+            <input
+              type="email"
+              value={submissionEmail}
+              onChange={(e) => setSubmissionEmail(e.target.value)}
+              className="w-full mb-4 p-2 rounded bg-gray-800 text-white"
+              placeholder="email@example.com"
+            />
+
+            <label className="block mb-2 text-sm font-medium">
+              Club/Bar Name &amp; Message:
+            </label>
+            <textarea
+              value={submissionMessage}
+              onChange={(e) => setSubmissionMessage(e.target.value)}
+              rows={3}
+              className="w-full mb-4 p-2 rounded bg-gray-800 text-white"
+              placeholder="Tell us which club/bar you want added..."
+            />
+
+            <button
+              onClick={handleSubmitClubSubmission}
+              className="bg-neon-purple px-4 py-2 rounded hover:bg-purple-800 text-black"
+            >
+              Submit
+            </button>
           </div>
         </div>
       )}
