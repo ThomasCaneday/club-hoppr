@@ -21,7 +21,7 @@ const clubsAndBars = [
   'Bloom',
   'Omertà',
   'Sevilla',
-  'Mr. Tempo',
+  'Mr Tempo',
   'TORO',
   'FLUXX',
   'Prohibition Lounge',
