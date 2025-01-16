@@ -202,11 +202,11 @@ const App = () => {
       </h2>
 
       {previousNightTop && (
-        <div className="mb-6 p-4 bg-gray-900 rounded-lg shadow-lg">
-          <h2 className="text-xl font-bold text-neon-purple mb-2">
-            Top Rated from the Previous Night ⭐️
+        <div className="mb-6 p-4 bg-gray-900 rounded-lg shadow-lg text-center">
+          <h2 className="text-xl font-bold text-neon-purple mb-2 text-center">
+            ⭐️ Top Rated from the Previous Night ⭐️
           </h2>
-          <h3 className="text-white font-bold text-lg mb-1">
+          <h3 className="text-white font-bold text-2xl mt-2 mb-1 text-center">
             {previousNightTop.club}
           </h3>
           <p className="text-yellow-400">
