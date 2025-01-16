@@ -28,7 +28,7 @@
 
 ## Demo
 
-Live hosted web app coming soon!
+[Live Site](https://thomascaneday.github.io/nightline/)
 
 ---
 
