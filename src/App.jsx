@@ -57,11 +57,11 @@ const App = () => {
 
     const timeout = setTimeout(() => {
       // Clear comments
-      clubsAndBars.forEach((club) => {
-        set(ref(database, `comments/${club}`), null);
-      });
+      const commentsRef = ref(database, 'comments');
+      set(commentsRef, null);
       // Clear ratings
-      set(ref(database, 'ratings'), null);
+      const ratingsRef = ref(database, 'ratings');
+      set(ratingsRef, null);
     }, resetTime - now);
 
     return () => clearTimeout(timeout);
