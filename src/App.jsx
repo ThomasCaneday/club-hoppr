@@ -139,7 +139,7 @@ const App = () => {
         NIGHTLINE
       </h1>
       <h2 className="text-1xl font-bold text-neon-purple mb-6 text-center">
-      Downtown San Diego & Pacific Beach Clubs/Bars Rating
+        Give YOUR Rating of the Hottest Spots in Downtown SD & PB!
       </h2>
 
       <div className="w-screen max-w-2xl bg-gray-900 shadow-lg rounded-lg p-4 sm:p-6 md:p-8">
