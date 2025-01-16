@@ -221,6 +221,22 @@ const App = () => {
     setShowSubmissionForm(false);
   };
 
+  const sortedClubs = [...clubsAndBars].sort((a, b) => {
+    const clubARatings = ratings[a];
+    const clubBRatings = ratings[b];
+  
+    // Compute averages or default to 0
+    const avgA = clubARatings && clubARatings.count > 0
+      ? clubARatings.total / clubARatings.count
+      : 0;
+    const avgB = clubBRatings && clubBRatings.count > 0
+      ? clubBRatings.total / clubBRatings.count
+      : 0;
+  
+    // Descending order: highest average first
+    return avgB - avgA;
+  });
+
   return (
     <div className="min-h-screen w-screen flex flex-col items-center bg-black p-4 sm:p-6 lg:p-8">
       <h1 className="text-4xl font-bold text-neon-purple mb-6 text-center">
@@ -245,7 +261,7 @@ const App = () => {
       )}
 
       <div className="w-screen max-w-2xl bg-gray-900 shadow-lg rounded-lg p-4 sm:p-6 md:p-8">
-        {clubsAndBars.map((club) => {
+        {sortedClubs.map((club) => {
           const clubRatings = ratings[club];
           let averageNumeric = null;
           if (clubRatings && clubRatings.count > 0) {
