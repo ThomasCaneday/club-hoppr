@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ref, onValue, update, set, get } from 'firebase/database';
 import database from '../firebase';
+import NewsTicker from './NewsTicker';
 import './index.css';
 
 const clubsAndBars = [
@@ -39,6 +40,13 @@ const clubsAndBars = [
   'The Collective',
   'Firehouse',
   'Hideaway'
+];
+
+const newsItems = [
+  'Nova SD: DJ Snake performing this Friday!',
+  'Mavericks Beach Club: Voted #1 for daytime vibes!',
+  'Most Underrated: The Duck Dive (check it out!)',
+  'Newest Venue Added: The Collective',
 ];
 
 const getRatingColorClass = (rating) => {
@@ -238,7 +246,8 @@ const App = () => {
   });
 
   return (
-    <div className="min-h-screen w-screen flex flex-col items-center bg-black p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen w-screen flex flex-col items-center bg-black pt-0 p-4 ">
+      <NewsTicker items={newsItems}></NewsTicker>
       <h1 className="text-4xl font-bold text-neon-purple mb-6 text-center">
         CLUB HOPPER
       </h1>
