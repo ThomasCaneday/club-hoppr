@@ -114,7 +114,7 @@ const App = () => {
     const now = new Date();
     const resetTime = new Date();
     resetTime.setHours(6, 0, 0, 0);
-    if (now > resetTime) resetTime.setDate(resetTime.getDate() + 1);
+    if (now == resetTime) resetTime.setDate(resetTime.getDate() + 1);
 
     const timeout = setTimeout(async () => {
       // 1. Get all current ratings
