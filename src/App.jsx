@@ -47,6 +47,8 @@ const newsItems = [
   'Mavericks Beach Club: Voted #1 for daytime vibes!',
   'Most Underrated: The Duck Dive (check it out!)',
   'Newest Venue Added: The Collective',
+  'Longest Top Rated Streak: Firehouse',
+  'New Happy Hour Deal @ Hideaway',
 ];
 
 const getRatingColorClass = (rating) => {
@@ -248,7 +250,7 @@ const App = () => {
   return (
     <div className="min-h-screen w-screen flex flex-col items-center bg-black pt-0 p-4 ">
       <NewsTicker items={newsItems}></NewsTicker>
-      <h1 className="text-4xl font-bold text-neon-purple mb-6 text-center">
+      <h1 className="text-5xl font-bold text-neon-purple mb-6 text-center">
         CLUB HOPPER
       </h1>
       <h2 className="text-1xl font-bold text-neon-purple mb-6 text-center">
