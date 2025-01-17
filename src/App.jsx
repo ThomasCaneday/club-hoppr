@@ -39,7 +39,7 @@ const clubsAndBars = [
   'The Silver Fox Lounge',
   'The Collective',
   'Firehouse',
-  'Hideaway'
+  'Hideaway',
 ];
 
 const newsItems = [
@@ -75,11 +75,19 @@ const App = () => {
   );
   const [newComment, setNewComment] = useState('');
 
-  // NEW STATE FOR SUBMISSION POPUP
+  // Submission Popup
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [submissionEmail, setSubmissionEmail] = useState('');
   const [submissionMessage, setSubmissionMessage] = useState('');
   const [previousNightTop, setPreviousNightTop] = useState(null);
+
+  // 3) For Search
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // 4) For Check-ins (Live Crowd Tracking)
+  const [checkInCounts, setCheckInCounts] = useState({});
+
+  // ========== FIREBASE LOADING ==========
 
   // Load RATINGS from Firebase
   useEffect(() => {
@@ -92,18 +100,27 @@ const App = () => {
     });
   }, []);
 
+  // Load CHECK-INS from Firebase
+  useEffect(() => {
+    const checkInsRef = ref(database, 'checkIns');
+    onValue(checkInsRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      setCheckInCounts(data);
+    });
+  }, []);
+
   // Daily RESET
   useEffect(() => {
     const now = new Date();
     const resetTime = new Date();
     resetTime.setHours(6, 0, 0, 0);
     if (now > resetTime) resetTime.setDate(resetTime.getDate() + 1);
-  
+
     const timeout = setTimeout(async () => {
       // 1. Get all current ratings
       const ratingsSnap = await get(ref(database, 'ratings'));
       const ratingsData = ratingsSnap.val();
-  
+
       if (ratingsData) {
         // 2. Find the club with the highest average rating
         let topClub = null;
@@ -118,7 +135,7 @@ const App = () => {
             }
           }
         });
-  
+
         if (topClub) {
           // 3. Store it in "topRating" with the average
           const topRatingRef = ref(database, 'topRating');
@@ -129,12 +146,13 @@ const App = () => {
           });
         }
       }
-  
-      // 4. Clear comments & ratings
+
+      // 4. Clear comments & ratings & checkIns
       set(ref(database, 'comments'), null);
       set(ref(database, 'ratings'), null);
+      set(ref(database, 'checkIns'), null);
     }, resetTime - now);
-  
+
     return () => clearTimeout(timeout);
   }, []);
 
@@ -144,7 +162,6 @@ const App = () => {
     onValue(topRatingRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        // data = { club: "Club Name", average: 8.6, timestamp: 169394... }
         setPreviousNightTop(data);
       } else {
         setPreviousNightTop(null);
@@ -174,7 +191,8 @@ const App = () => {
     return () => unsubscribe();
   }, [currentClubForComments]);
 
-  // RENDER AVERAGE
+  // ========== HELPER RENDERING ==========
+
   const renderAverage = (club) => {
     const clubRatings = ratings[club];
     if (!clubRatings || clubRatings.count === 0) {
@@ -184,6 +202,8 @@ const App = () => {
     const colorClass = getRatingColorClass(average);
     return <span className={colorClass}>{average.toFixed(1)}</span>;
   };
+
+  // ========== HANDLERS ==========
 
   // ADD COMMENT (PER CLUB)
   const handleAddComment = () => {
@@ -213,7 +233,7 @@ const App = () => {
     setRatedLocations((prev) => new Set(prev).add(club));
   };
 
-  // NEW: HANDLE SUBMISSION
+  // SUBMISSION FOR NEW CLUB/BAR
   const handleSubmitClubSubmission = () => {
     if (!submissionEmail.trim() || !submissionMessage.trim()) return;
 
@@ -231,25 +251,45 @@ const App = () => {
     setShowSubmissionForm(false);
   };
 
+  // CHECK-IN / CROWD TRACKING
+  const handleCheckIn = (club) => {
+    const currentCount = checkInCounts[club]?.count || 0; // Ensure we access `count` if it exists
+    update(ref(database, `checkIns/${club}`), { count: currentCount + 1 })
+      .then(() => console.log(`Check-in successful for ${club}`))
+      .catch((err) => console.error("Check-in failed:", err));
+  };  
+
+  // ========== SORTING & SEARCH FILTERING ==========
+
+  // Sort clubs by average rating (descending)
   const sortedClubs = [...clubsAndBars].sort((a, b) => {
     const clubARatings = ratings[a];
     const clubBRatings = ratings[b];
-  
-    // Compute averages or default to 0
-    const avgA = clubARatings && clubARatings.count > 0
-      ? clubARatings.total / clubARatings.count
-      : 0;
-    const avgB = clubBRatings && clubBRatings.count > 0
-      ? clubBRatings.total / clubBRatings.count
-      : 0;
-  
-    // Descending order: highest average first
-    return avgB - avgA;
+
+    const avgA =
+      clubARatings && clubARatings.count > 0
+        ? clubARatings.total / clubARatings.count
+        : 0;
+    const avgB =
+      clubBRatings && clubBRatings.count > 0
+        ? clubBRatings.total / clubBRatings.count
+        : 0;
+
+    return avgB - avgA; // highest first
   });
 
+  // Filter by search term
+  const filteredClubs = sortedClubs.filter((club) =>
+    club.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // ========== RENDER ==========
+
   return (
-    <div className="min-h-screen w-screen flex flex-col items-center bg-black pt-0 p-4 ">
-      <NewsTicker items={newsItems}></NewsTicker>
+    <div className="min-h-screen w-screen flex flex-col items-center bg-black pt-0 p-4">
+      {/* News Ticker at Top */}
+      <NewsTicker items={newsItems} />
+
       <h1 className="text-5xl font-bold text-neon-purple mb-6 text-center">
         CLUB HOPPER
       </h1>
@@ -271,14 +311,27 @@ const App = () => {
         </div>
       )}
 
+      {/* SEARCH BAR */}
+      <div className="w-full max-w-md mb-6">
+        <input
+          type="text"
+          className="w-full p-2 rounded bg-gray-800 text-white"
+          placeholder="Search for a club..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
+      {/* LIST OF CLUBS */}
       <div className="w-screen max-w-2xl bg-gray-900 shadow-lg rounded-lg p-4 sm:p-6 md:p-8">
-        {sortedClubs.map((club) => {
+        {filteredClubs.map((club) => {
           const clubRatings = ratings[club];
           let averageNumeric = null;
           if (clubRatings && clubRatings.count > 0) {
             averageNumeric = clubRatings.total / clubRatings.count;
           }
           const fireOpacity = averageNumeric ? getFireOpacity(averageNumeric) : 0;
+          const crowdCount = checkInCounts[club] || 0;
 
           return (
             <div key={club} className="border-b border-neon-purple py-4">
@@ -289,7 +342,6 @@ const App = () => {
                 View Comments
               </button>
 
-              {/* CLUB NAME + FIRE EMOJI */}
               <h2 className="text-2xl font-semibold text-white mb-2">
                 {club}
                 {averageNumeric && (
@@ -302,11 +354,13 @@ const App = () => {
                 )}
               </h2>
 
+              {/* AVERAGE RATING */}
               <p className="text-gray-400 mb-2">
                 Average Rating: {renderAverage(club)}
               </p>
 
-              <div className="flex flex-wrap space-x-1">
+              {/* RATING BUTTONS */}
+              <div className="flex flex-wrap space-x-1 mb-2">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
                   <button
                     key={rating}
@@ -318,6 +372,19 @@ const App = () => {
                   </button>
                 ))}
               </div>
+
+              {/* CHECK-IN CROWD TRACKING */}
+              <div className="flex items-center space-x-4 mb-2">
+                <button
+                  onClick={() => handleCheckIn(club)}
+                  className="bg-blue-600 px-3 py-1 rounded hover:bg-blue-700 text-white"
+                >
+                  Check In
+                </button>
+                <p className="text-white">
+                  Crowd Meter: <span className="text-yellow-400 font-bold">{checkInCounts[club]?.count || 0}</span> people
+                </p>
+              </div>
             </div>
           );
         })}
@@ -325,10 +392,10 @@ const App = () => {
 
       {/* FOOTER */}
       <footer className="mt-6 text-gray-400 text-sm text-center">
-        Ratings & Comments reset daily at 6:00 AM PST
+        Ratings, Comments, & Check-Ins reset daily at 6:00 AM PST
       </footer>
 
-      {/* NEW: Request a Bar/Club Button */}
+      {/* Request a Bar/Club to be Added */}
       <button
         className="mt-4 bg-neon-purple px-4 py-2 rounded hover:bg-purple-800 text-black"
         onClick={() => setShowSubmissionForm(true)}
@@ -336,7 +403,7 @@ const App = () => {
         Request a Bar/Club to be Added
       </button>
 
-      {/* EXISTING COMMENTS POPUP */}
+      {/* COMMENTS SIDEBAR */}
       {currentClubForComments && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-end z-50">
           <div className="bg-gray-900 text-white w-80 h-full shadow-lg overflow-y-auto p-4 relative">
@@ -346,9 +413,7 @@ const App = () => {
             >
               Close
             </button>
-            <h2 className="text-2xl font-bold mb-4">
-              {currentClubForComments}
-            </h2>
+            <h2 className="text-2xl font-bold mb-4">{currentClubForComments}</h2>
             <div className="mt-4">
               <textarea
                 className="w-full bg-gray-800 text-white rounded p-2"
@@ -378,7 +443,7 @@ const App = () => {
         </div>
       )}
 
-      {/* NEW: Club Submission Popover */}
+      {/* Club Submission Popover */}
       {showSubmissionForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-gray-900 text-white w-80 rounded-lg shadow-lg p-4 relative">
@@ -390,9 +455,7 @@ const App = () => {
             </button>
             <h2 className="text-2xl font-bold mb-4">Request a New Club/Bar</h2>
 
-            <label className="block mb-2 text-sm font-medium">
-              Your Email:
-            </label>
+            <label className="block mb-2 text-sm font-medium">Your Email:</label>
             <input
               type="email"
               value={submissionEmail}
