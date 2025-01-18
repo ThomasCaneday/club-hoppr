@@ -86,6 +86,7 @@ const App = () => {
 
   // 4) For Check-ins (Live Crowd Tracking)
   const [checkInCounts, setCheckInCounts] = useState({});
+  const [checkedInLocations, setCheckedInLocations] = useState(new Set());
 
   // ========== FIREBASE LOADING ==========
 
@@ -252,10 +253,21 @@ const App = () => {
 
   // CHECK-IN / CROWD TRACKING
   const handleCheckIn = (club) => {
-    const currentCount = checkInCounts[club]?.count || 0; // Ensure we access `count` if it exists
+    // 1. Check if this club has already been checked in
+    if (checkedInLocations.has(club)) {
+      alert('You have already checked in at this location.');
+      return;
+    }
+  
+    // 2. If not, proceed with incrementing the check-in count in Firebase
+    const currentCount = checkInCounts[club]?.count || 0;
     update(ref(database, `checkIns/${club}`), { count: currentCount + 1 })
-      .then(() => console.log(`Check-in successful for ${club}`))
-      .catch((err) => console.error("Check-in failed:", err));
+      .then(() => {
+        console.log(`Check-in successful for ${club}`);
+        // 3. Mark this club as checked in for the current session
+        setCheckedInLocations((prev) => new Set(prev).add(club));
+      })
+      .catch((err) => console.error('Check-in failed:', err));
   };  
 
   // ========== SORTING & SEARCH FILTERING ==========
