@@ -28,7 +28,7 @@
 
 ## Demo
 
-[Live Site](https://thomascaneday.github.io/club-hoppr/)
+[Live Site](https://clubhoppr.com/)
 
 ---
 
