@@ -4,7 +4,7 @@ import tailwindcss from 'tailwindcss'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/club-hopper/',
+  base: '/club-hoppr/',
   plugins: [react()],
   css: {
     postcss: {
