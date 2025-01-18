@@ -196,7 +196,7 @@ const App = () => {
     }, resetTime.getTime() - now.getTime());
   
     return () => clearTimeout(timeout);
-  }, []);  
+  }, []);
 
   // Top Rating from Previous Night
   useEffect(() => {

@@ -43,16 +43,16 @@ export default function HeatMapContainer({ userLocations }) {
 
   return (
     <div className="mb-2 mt-4 p-4 bg-gray-900 rounded-lg shadow-lg text-center w-full max-w-2xl">
-      {/* <h2 className="text-md font-bold text-neon-purple mb-2 text-center">
-        Live Heat Map
-      </h2> */}
+      <h2 className="text-md font-bold text-neon-purple mb-2 text-center">
+        See Where Other Users are Checked In!
+      </h2>
 
       {/* Map Container */}
       <div className="w-full h-96">
         <MapContainer
           center={center}
           zoom={12}
-          className="w-full h-full rounded-lg"
+          className="w-full h-full rounded-lg z-0"
         >
           <TileLayer
             // Using a free OpenStreetMap tile layer
