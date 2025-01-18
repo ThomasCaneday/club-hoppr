@@ -291,7 +291,7 @@ const App = () => {
       <NewsTicker items={newsItems} />
 
       <h1 className="text-5xl font-bold text-neon-purple mb-6 text-center">
-        CLUB HOPPER
+        CLUB HOPPR
       </h1>
       <h2 className="text-1xl font-bold text-neon-purple mb-6 text-center">
         Give YOUR Rating of the Hottest Spots in Downtown SD & PB!
