@@ -299,7 +299,7 @@ const handleCheckIn = (club) => {
       {/* News Ticker at Top */}
       <NewsTicker items={newsItems} />
 
-      <h1 className="text-5xl font-bold text-neon-purple mb-6 text-center">
+      <h1 className="text-5xl font-bold bg-gradient-to-b from-purple-500 to-violet-800 bg-clip-text text-transparent mb-6 text-center">
         CLUB HOPPR
       </h1>
       <h2 className="text-1xl font-bold text-neon-purple mb-6 text-center">

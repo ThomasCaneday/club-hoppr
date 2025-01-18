@@ -14,7 +14,6 @@ export default {
         }
       },
       animation: {
-        // 15s linear infinite
         'news-ticker': 'newsTickerScroll 60s linear infinite'
       },
     },
