@@ -37,19 +37,27 @@ const clubsAndBars = [
   'The Local',
   'Open Bar',
   'Tavern at the Beach',
-  'The Silver Fox Lounge',
+  'Silver Fox Lounge',
   'The Collective',
   'Firehouse',
   'Hideaway',
 ];
 
 const newsItems = [
-  'Nova SD: DJ Snake performing this Friday!',
-  'Mavericks Beach Club: Voted #1 for daytime vibes!',
+  'Spin Nightclub: Damien Shane B2B Yoey performing January 30!',
+  'Mavericks Beach Club: Come watch Super Bowl LIX on February 9th!',
   'Most Underrated: The Duck Dive (check it out!)',
-  'Newest Venue Added: The Collective',
-  'Longest Top Rated Streak: Firehouse',
-  'New Happy Hour Deal @ Hideaway',
+  'Newest Venue Added: Hideaway',
+  'Longest Top Rated Streak: Parq',
+  'Hideaway: HAPPY HOUR from 3-6:30PM Monday thru Friday!',
+  '710 Beach Club: Trivia Night EVERY Tuesday @ 7:00PM',
+  'Firehouse: DJ GMRF performing June 4 @ 9:00PM',
+  'The Collective: Jam Night EVERY Wednesday 7-11PM',
+  'Silver Fox Lounge: Voted Best Happy Hour and Best Neighborhood Bar in SD!',
+  'Lahaina Beach Houe: Best Sunsets since \'83',
+  'Moonshine Beach: Ty Myers brings The Select Tour on Wednesday May 21!',
+  'Mr Tempo: Banda EVERY Friday from 8PM-2AM',
+  'Side Bar: LIMITED SPOTS for DJ Master Class February 2 thru February 6!'
 ];
 
 const getRatingColorClass = (rating) => {
