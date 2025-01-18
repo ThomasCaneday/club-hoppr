@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ref, onValue, update, set, get } from 'firebase/database';
+import { ref, onValue, update, set, get, push } from 'firebase/database';
 import database from '../firebase';
 import NewsTicker from './NewsTicker';
+import HeatMapContainer from './HeatMap';
 import './index.css';
 
 const clubsAndBars = [
@@ -88,6 +89,9 @@ const App = () => {
   const [checkInCounts, setCheckInCounts] = useState({});
   const [checkedInLocations, setCheckedInLocations] = useState(new Set());
 
+  // For Heat Map
+  const [userLocations, setUserLocations] = useState([]);
+
   // ========== FIREBASE LOADING ==========
 
   // Load RATINGS from Firebase
@@ -99,6 +103,43 @@ const App = () => {
         setRatings(data);
       }
     });
+  }, []);
+
+  useEffect(() => {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          // Push new location to Firebase under /userLocations
+          const newRef = push(ref(database, 'userLocations'));
+          set(newRef, {
+            lat: latitude,
+            lng: longitude,
+            timestamp: Date.now(),
+          });
+        },
+        (error) => {
+          console.error('Error getting geolocation:', error);
+        }
+      );
+    }
+  }, []);
+  
+  // Listen to all user locations in Firebase
+  useEffect(() => {
+    const userLocRef = ref(database, 'userLocations');
+    const unsubscribe = onValue(userLocRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        // Convert the data object into an array of { lat, lng, timestamp } objects
+        const locationsArray = Object.values(data);
+        setUserLocations(locationsArray);
+      } else {
+        setUserLocations([]);
+      }
+    });
+  
+    return () => unsubscribe();
   }, []);
 
   // Load CHECK-INS from Firebase
@@ -151,6 +192,7 @@ const App = () => {
       set(ref(database, 'comments'), null);
       set(ref(database, 'ratings'), null);
       set(ref(database, 'checkIns'), null);
+      set(ref(database, 'userLocations'), null);
     }, resetTime.getTime() - now.getTime());
   
     return () => clearTimeout(timeout);
@@ -400,6 +442,8 @@ const App = () => {
           );
         })}
       </div>
+
+      <HeatMapContainer userLocations={userLocations} />
 
       {/* FOOTER */}
       <footer className="mt-6 text-gray-400 text-sm text-center">
