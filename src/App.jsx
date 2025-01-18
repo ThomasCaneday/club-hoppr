@@ -152,51 +152,51 @@ const App = () => {
   }, []);
 
   // Daily RESET
-  useEffect(() => {
-    const now = new Date();
-    let resetTime = new Date();
-    resetTime.setHours(6, 0, 0, 0);
+  // useEffect(() => {
+  //   const now = new Date();
+  //   let resetTime = new Date();
+  //   resetTime.setHours(6, 0, 0, 0);
   
-    if (resetTime.getTime() <= now.getTime()) {
-      resetTime.setDate(resetTime.getDate() + 1);
-    }
+  //   if (resetTime.getTime() <= now.getTime()) {
+  //     resetTime.setDate(resetTime.getDate() + 1);
+  //   }
   
-    const timeout = setTimeout(async () => {
-      const ratingsSnap = await get(ref(database, 'ratings'));
-      const ratingsData = ratingsSnap.val();
+  //   const timeout = setTimeout(async () => {
+  //     const ratingsSnap = await get(ref(database, 'ratings'));
+  //     const ratingsData = ratingsSnap.val();
   
-      if (ratingsData) {
-        let topClub = null;
-        let topAverage = -Infinity;
-        Object.keys(ratingsData).forEach((clubName) => {
-          const { total, count } = ratingsData[clubName];
-          if (count > 0) {
-            const avg = total / count;
-            if (avg > topAverage) {
-              topAverage = avg;
-              topClub = clubName;
-            }
-          }
-        });
+  //     if (ratingsData) {
+  //       let topClub = null;
+  //       let topAverage = -Infinity;
+  //       Object.keys(ratingsData).forEach((clubName) => {
+  //         const { total, count } = ratingsData[clubName];
+  //         if (count > 0) {
+  //           const avg = total / count;
+  //           if (avg > topAverage) {
+  //             topAverage = avg;
+  //             topClub = clubName;
+  //           }
+  //         }
+  //       });
   
-        if (topClub) {
-          const topRatingRef = ref(database, 'topRating');
-          set(topRatingRef, {
-            club: topClub,
-            average: topAverage,
-            timestamp: Date.now(),
-          });
-        }
-      }
+  //       if (topClub) {
+  //         const topRatingRef = ref(database, 'topRating');
+  //         set(topRatingRef, {
+  //           club: topClub,
+  //           average: topAverage,
+  //           timestamp: Date.now(),
+  //         });
+  //       }
+  //     }
   
-      set(ref(database, 'comments'), null);
-      set(ref(database, 'ratings'), null);
-      set(ref(database, 'checkIns'), null);
-      set(ref(database, 'userLocations'), null);
-    }, resetTime.getTime() - now.getTime());
+  //     set(ref(database, 'comments'), null);
+  //     set(ref(database, 'ratings'), null);
+  //     set(ref(database, 'checkIns'), null);
+  //     set(ref(database, 'userLocations'), null);
+  //   }, resetTime.getTime() - now.getTime());
   
-    return () => clearTimeout(timeout);
-  }, []);
+  //   return () => clearTimeout(timeout);
+  // }, []);
 
   // Top Rating from Previous Night
   useEffect(() => {
