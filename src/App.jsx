@@ -104,26 +104,6 @@ const App = () => {
       }
     });
   }, []);
-
-  useEffect(() => {
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          // Push new location to Firebase under /userLocations
-          const newRef = push(ref(database, 'userLocations'));
-          set(newRef, {
-            lat: latitude,
-            lng: longitude,
-            timestamp: Date.now(),
-          });
-        },
-        (error) => {
-          console.error('Error getting geolocation:', error);
-        }
-      );
-    }
-  }, []);
   
   // Listen to all user locations in Firebase
   useEffect(() => {
@@ -150,53 +130,6 @@ const App = () => {
       setCheckInCounts(data);
     });
   }, []);
-
-  // Daily RESET
-  // useEffect(() => {
-  //   const now = new Date();
-  //   let resetTime = new Date();
-  //   resetTime.setHours(6, 0, 0, 0);
-  
-  //   if (resetTime.getTime() <= now.getTime()) {
-  //     resetTime.setDate(resetTime.getDate() + 1);
-  //   }
-  
-  //   const timeout = setTimeout(async () => {
-  //     const ratingsSnap = await get(ref(database, 'ratings'));
-  //     const ratingsData = ratingsSnap.val();
-  
-  //     if (ratingsData) {
-  //       let topClub = null;
-  //       let topAverage = -Infinity;
-  //       Object.keys(ratingsData).forEach((clubName) => {
-  //         const { total, count } = ratingsData[clubName];
-  //         if (count > 0) {
-  //           const avg = total / count;
-  //           if (avg > topAverage) {
-  //             topAverage = avg;
-  //             topClub = clubName;
-  //           }
-  //         }
-  //       });
-  
-  //       if (topClub) {
-  //         const topRatingRef = ref(database, 'topRating');
-  //         set(topRatingRef, {
-  //           club: topClub,
-  //           average: topAverage,
-  //           timestamp: Date.now(),
-  //         });
-  //       }
-  //     }
-  
-  //     set(ref(database, 'comments'), null);
-  //     set(ref(database, 'ratings'), null);
-  //     set(ref(database, 'checkIns'), null);
-  //     set(ref(database, 'userLocations'), null);
-  //   }, resetTime.getTime() - now.getTime());
-  
-  //   return () => clearTimeout(timeout);
-  // }, []);
 
   // Top Rating from Previous Night
   useEffect(() => {
@@ -294,23 +227,46 @@ const App = () => {
   };
 
   // CHECK-IN / CROWD TRACKING
-  const handleCheckIn = (club) => {
-    // 1. Check if this club has already been checked in
-    if (checkedInLocations.has(club)) {
-      alert('You have already checked in at this location.');
-      return;
-    }
-  
-    // 2. If not, proceed with incrementing the check-in count in Firebase
-    const currentCount = checkInCounts[club]?.count || 0;
-    update(ref(database, `checkIns/${club}`), { count: currentCount + 1 })
-      .then(() => {
-        console.log(`Check-in successful for ${club}`);
-        // 3. Mark this club as checked in for the current session
-        setCheckedInLocations((prev) => new Set(prev).add(club));
-      })
-      .catch((err) => console.error('Check-in failed:', err));
-  };  
+const handleCheckIn = (club) => {
+  // 1. Check if this club has already been checked in
+  if (checkedInLocations.has(club)) {
+    alert('You have already checked in at this location.');
+    return;
+  }
+
+  // 2. Attempt to retrieve user geolocation
+  if ('geolocation' in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+
+        // 3. Store location ONLY when checking in
+        const newRef = push(ref(database, 'userLocations'));
+        set(newRef, {
+          lat: latitude,
+          lng: longitude,
+          timestamp: Date.now(),
+        });
+
+        // 4. Update the check-in count in Firebase
+        const currentCount = checkInCounts[club]?.count || 0;
+        update(ref(database, `checkIns/${club}`), { count: currentCount + 1 })
+          .then(() => {
+            console.log(`Check-in successful for ${club}`);
+            // 5. Mark this club as checked in for the current session
+            setCheckedInLocations((prev) => new Set(prev).add(club));
+          })
+          .catch((err) => console.error('Check-in failed:', err));
+      },
+      (error) => {
+        console.error('Error getting geolocation:', error);
+        alert('Unable to retrieve location. Check-in canceled.');
+      }
+    );
+  } else {
+    alert('Geolocation is not supported by your browser.');
+  }
+};
 
   // ========== SORTING & SEARCH FILTERING ==========
 
