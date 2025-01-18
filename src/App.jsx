@@ -80,6 +80,7 @@ const App = () => {
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [submissionEmail, setSubmissionEmail] = useState('');
   const [submissionMessage, setSubmissionMessage] = useState('');
+  const [honeypotValue, setHoneypotValue] = useState("");
   const [previousNightTop, setPreviousNightTop] = useState(null);
 
   // 3) For Search
@@ -210,6 +211,10 @@ const App = () => {
 
   // SUBMISSION FOR NEW CLUB/BAR
   const handleSubmitClubSubmission = () => {
+    if (honeypotValue.trim()) {
+      alert("Spam detected! Honeypot field was filled.");
+      return;
+    }
     if (!submissionEmail.trim() || !submissionMessage.trim()) return;
 
     const uniqueKey = Date.now();
@@ -224,6 +229,7 @@ const App = () => {
     setSubmissionEmail('');
     setSubmissionMessage('');
     setShowSubmissionForm(false);
+    alert("Your message was submitted successfully! Thank you for using Club Hoppr!");
   };
 
   // CHECK-IN / CROWD TRACKING
@@ -303,7 +309,7 @@ const handleCheckIn = (club) => {
         CLUB HOPPR
       </h1>
       <h2 className="text-1xl font-bold text-neon-purple mb-6 text-center">
-        Give YOUR Rating of the Hottest Spots in Downtown SD & PB!
+        Give YOUR Rating of the Hottest Spots in Downtown SD &amp; PB!
       </h2>
 
       {previousNightTop && (
@@ -403,7 +409,7 @@ const handleCheckIn = (club) => {
 
       {/* FOOTER */}
       <footer className="mt-6 text-gray-400 text-sm text-center">
-        Ratings, Comments, & Check-Ins reset daily at 6:00 AM PST
+        Ratings, Comments, &amp; Check-Ins reset daily at 6:00 AM PST
       </footer>
 
       {/* Request a Bar/Club to be Added */}
@@ -411,7 +417,7 @@ const handleCheckIn = (club) => {
         className="mt-4 bg-neon-purple px-4 py-2 rounded hover:bg-purple-800 text-black"
         onClick={() => setShowSubmissionForm(true)}
       >
-        Request a Bar/Club to be Added
+        Send Us Feedback
       </button>
 
       {/* COMMENTS SIDEBAR */}
@@ -459,12 +465,12 @@ const handleCheckIn = (club) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-gray-900 text-white w-80 rounded-lg shadow-lg p-4 relative">
             <button
-              className="float-right top-2 right-2 text-gray-400 hover:text-gray-200"
+              className="float-right mr-0.5 top-2 right-2 text-gray-400 hover:text-gray-200"
               onClick={() => setShowSubmissionForm(false)}
             >
               Close
             </button>
-            <h2 className="text-2xl font-bold mb-4">Request a New Club/Bar</h2>
+            <h2 className="text-2xl font-bold mb-4">Submit Feedback</h2>
 
             <label className="block mb-2 text-sm font-medium">Your Email:</label>
             <input
@@ -476,14 +482,24 @@ const handleCheckIn = (club) => {
             />
 
             <label className="block mb-2 text-sm font-medium">
-              Club/Bar Name &amp; Message:
+              Your Message:
             </label>
             <textarea
               value={submissionMessage}
               onChange={(e) => setSubmissionMessage(e.target.value)}
               rows={3}
               className="w-full mb-4 p-2 rounded bg-gray-800 text-white"
-              placeholder="Tell us which club/bar you want added..."
+              placeholder="Tell us which venue you want added, concerns, questions, suggestions, etc..."
+            />
+
+            <input
+              type="text"
+              name="honeypot"
+              value={honeypotValue}
+              onChange={(e) => setHoneypotValue(e.target.value)}
+              // Hide it from the UI so a normal user never sees it
+              style={{ display: "none" }}
+              autoComplete="off"
             />
 
             <button
