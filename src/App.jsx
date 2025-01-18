@@ -112,17 +112,18 @@ const App = () => {
   // Daily RESET
   useEffect(() => {
     const now = new Date();
-    const resetTime = new Date();
+    let resetTime = new Date();
     resetTime.setHours(6, 0, 0, 0);
-    if (now == resetTime) resetTime.setDate(resetTime.getDate() + 1);
-
+  
+    if (resetTime.getTime() <= now.getTime()) {
+      resetTime.setDate(resetTime.getDate() + 1);
+    }
+  
     const timeout = setTimeout(async () => {
-      // 1. Get all current ratings
       const ratingsSnap = await get(ref(database, 'ratings'));
       const ratingsData = ratingsSnap.val();
-
+  
       if (ratingsData) {
-        // 2. Find the club with the highest average rating
         let topClub = null;
         let topAverage = -Infinity;
         Object.keys(ratingsData).forEach((clubName) => {
@@ -135,9 +136,8 @@ const App = () => {
             }
           }
         });
-
+  
         if (topClub) {
-          // 3. Store it in "topRating" with the average
           const topRatingRef = ref(database, 'topRating');
           set(topRatingRef, {
             club: topClub,
@@ -146,15 +146,14 @@ const App = () => {
           });
         }
       }
-
-      // 4. Clear comments & ratings & checkIns
+  
       set(ref(database, 'comments'), null);
       set(ref(database, 'ratings'), null);
       set(ref(database, 'checkIns'), null);
-    }, resetTime - now);
-
+    }, resetTime.getTime() - now.getTime());
+  
     return () => clearTimeout(timeout);
-  }, []);
+  }, []);  
 
   // Top Rating from Previous Night
   useEffect(() => {
