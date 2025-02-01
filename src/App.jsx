@@ -9,6 +9,7 @@ const clubsAndBars = [
   'The Owl San Diego',
   'Mavericks Beach Club',
   'Nova SD',
+  'Hideaway',
   'PB Shore Club',
   'Parq',
   'The Duck Dive',
@@ -40,7 +41,15 @@ const clubsAndBars = [
   'Silver Fox Lounge',
   'The Collective',
   'Firehouse',
-  'Hideaway',
+  'Nolita Hall',
+  'Camino Riviera',
+  'Waterfront',
+  'Waterbar',
+  'Beachcomber',
+  'Sidecar',
+  'Park & Rec',
+  'American Junkie',
+  'Lafayette'
 ];
 
 const newsItems = [
