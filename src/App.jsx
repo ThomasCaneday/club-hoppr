@@ -53,7 +53,6 @@ const clubsAndBars = [
 ];
 
 const newsItems = [
-  'Spin Nightclub: Damien Shane B2B Yoey performing January 30!',
   'Mavericks Beach Club: Come watch Super Bowl LIX on February 9th!',
   'Most Underrated: The Duck Dive (check it out!)',
   'Newest Venue Added: Hideaway',
@@ -66,7 +65,8 @@ const newsItems = [
   'Lahaina Beach Houe: Best Sunsets since \'83',
   'Moonshine Beach: Ty Myers brings The Select Tour on Wednesday May 21!',
   'Mr Tempo: Banda EVERY Friday from 8PM-2AM',
-  'Side Bar: LIMITED SPOTS for DJ Master Class February 2 thru February 6!'
+  'Side Bar: LIMITED SPOTS for DJ Master Class February 2 thru February 6!',
+  'Spin Nightclub: Damien Shane B2B Yoey performing January 30!'
 ];
 
 const getRatingColorClass = (rating) => {
