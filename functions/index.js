@@ -46,7 +46,6 @@ export const dailyReset = onSchedule(
         }
 
         // 4. Reset your other data
-        await db.ref('comments').set(null);
         await db.ref('ratings').set(null);
         await db.ref('checkIns').set(null);
         await db.ref('userLocations').set(null);
