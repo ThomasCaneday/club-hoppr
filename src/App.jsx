@@ -274,7 +274,7 @@ const handleCheckIn = (club) => {
       },
       (error) => {
         console.error('Error getting geolocation:', error);
-        alert('Unable to retrieve location. Check-in canceled.');
+        alert('Unable to retrieve location. Check-in canceled. Check your settings to make sure your browser can access your location.');
       }
     );
   } else {
