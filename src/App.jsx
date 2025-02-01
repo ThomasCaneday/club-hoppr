@@ -291,7 +291,7 @@ const App = () => {
     setSubmissionEmail('');
     setSubmissionMessage('');
     setShowSubmissionForm(false);
-    alert("Your message was submitted successfully! Thank you for using Club Hoppr!");
+    alert("Your message was submitted successfully! Thank you for improving Club Hoppr!");
   };
 
   // CHECK-IN / CROWD TRACKING
