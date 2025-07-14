@@ -1,5 +1,6 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApp, getApps } from "firebase/app";
 import { getDatabase } from "firebase/database";
+import { getFirestore } from 'firebase/firestore';
 
 const apiKey = import.meta.env.VITE_API_KEY;
 const authDomain = import.meta.env.VITE_AUTH_DOMAIN;
@@ -22,9 +23,10 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export const app   = getApps().length ? getApp() : initializeApp(firebaseConfig);
+export const firestore    = getFirestore(app);
+export const database  = getDatabase(app);
 
-// Get Realtime Database
-const database = getDatabase(app);
+// Optional local-emulator wiring here …
 
-export default database;
+export default app;

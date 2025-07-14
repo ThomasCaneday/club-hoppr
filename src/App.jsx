@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { ref, onValue, update, set, push } from 'firebase/database';
-import database from '../firebase';
-import NewsTicker from './assets/NewsTicker';
+import { database } from '../firebase';
+// import NewsTicker from './assets/NewsTicker';
 import HeatMapContainer from './assets/HeatMap';
+import MarqueeBar from './assets/MarqueeBar';
 import './index.css';
 
 const clubsAndBars = [
@@ -98,22 +99,22 @@ const clubLocations = {
   'Lafayette': 'https://www.google.com/maps/dir//2223+El+Cajon+Blvd,+San+Diego,+CA+92104/@32.7548874,-117.2230642,12z/data=!4m8!4m7!1m0!1m5!1m1!1s0x80d954e48e9c792f:0xf683f1f59b87baf5!2m2!1d-117.1406668!2d32.7549633?entry=ttu&g_ep=EgoyMDI1MDEyOS4xIKXMDSoASAFQAw%3D%3D'
 };
 
-const newsItems = [
-  'Mavericks Beach Club: Come watch Super Bowl LIX on February 9th!',
-  'Most Underrated: The Duck Dive (check it out!)',
-  'Newest Venue Added: Hideaway',
-  'Longest Top Rated Streak: Parq',
-  'Hideaway: HAPPY HOUR from 3-6:30PM Monday thru Friday!',
-  '710 Beach Club: Trivia Night EVERY Tuesday @ 7:00PM',
-  'Firehouse: DJ GMRF performing June 4 @ 9:00PM',
-  'The Collective: Jam Night EVERY Wednesday 7-11PM',
-  'Silver Fox Lounge: Voted Best Happy Hour and Best Neighborhood Bar in SD!',
-  'Lahaina Beach Houe: Best Sunsets since \'83',
-  'Moonshine Beach: Ty Myers brings The Select Tour on Wednesday May 21!',
-  'Mr Tempo: Banda EVERY Friday from 8PM-2AM',
-  'Side Bar: LIMITED SPOTS for DJ Master Class February 2 thru February 6!',
-  'Spin Nightclub: Damien Shane B2B Yoey performing January 30!'
-];
+// const newsItems = [
+//   'Mavericks Beach Club: Come watch Super Bowl LIX on February 9th!',
+//   'Most Underrated: The Duck Dive (check it out!)',
+//   'Newest Venue Added: Hideaway',
+//   'Longest Top Rated Streak: Parq',
+//   'Hideaway: HAPPY HOUR from 3-6:30PM Monday thru Friday!',
+//   '710 Beach Club: Trivia Night EVERY Tuesday @ 7:00PM',
+//   'Firehouse: DJ GMRF performing June 4 @ 9:00PM',
+//   'The Collective: Jam Night EVERY Wednesday 7-11PM',
+//   'Silver Fox Lounge: Voted Best Happy Hour and Best Neighborhood Bar in SD!',
+//   'Lahaina Beach Houe: Best Sunsets since \'83',
+//   'Moonshine Beach: Ty Myers brings The Select Tour on Wednesday May 21!',
+//   'Mr Tempo: Banda EVERY Friday from 8PM-2AM',
+//   'Side Bar: LIMITED SPOTS for DJ Master Class February 2 thru February 6!',
+//   'Spin Nightclub: Damien Shane B2B Yoey performing January 30!'
+// ];
 
 const getRatingColorClass = (rating) => {
   if (rating >= 7) return 'text-green-500';
@@ -353,7 +354,8 @@ const App = () => {
   return (
     <div className="min-h-screen w-screen flex flex-col items-center bg-black pt-0 p-4">
       {/* News Ticker at Top */}
-      <NewsTicker items={newsItems} />
+      {/* <NewsTicker items={newsItems} /> */}
+      <MarqueeBar />
 
       <h1 className="text-5xl font-bold bg-gradient-to-b from-purple-500 to-violet-800 bg-clip-text text-transparent mb-6 text-center">
         CLUB HOPPR
