@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { ref, onValue, update, set, push } from 'firebase/database';
 import database from '../firebase';
-import NewsTicker from './NewsTicker';
-import HeatMapContainer from './HeatMap';
+import NewsTicker from './assets/NewsTicker';
+import HeatMapContainer from './assets/HeatMap';
 import './index.css';
 
 const clubsAndBars = [
