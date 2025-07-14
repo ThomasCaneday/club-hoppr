@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ref, onValue, update, set, push } from 'firebase/database';
 import database from '../firebase';
 import NewsTicker from './NewsTicker';
@@ -396,7 +396,7 @@ const App = () => {
             averageNumeric = clubRatings.total / clubRatings.count;
           }
           const fireOpacity = averageNumeric ? getFireOpacity(averageNumeric) : 0;
-          const crowdCount = checkInCounts[club] || 0;
+          // const crowdCount = checkInCounts[club] || 0;
 
           return (
             <div key={club} className="border-b border-neon-purple py-4">
